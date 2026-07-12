@@ -10,7 +10,7 @@ BASE = "http://localhost:8000"
 
 
 def login():
-    r = requests.post(f"{BASE}/api/auth/login/", json={"username": "admin", "password": "admin123"})
+    r = requests.post(f"{BASE}/api/auth/login/", json={"username": "admin", "password": "admin"})
     data = r.json()
     emp = data["empleado"]
     print(f"[OK] Login - {emp['nombres']} ({emp['rol']})")
