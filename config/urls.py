@@ -45,5 +45,5 @@ urlpatterns = [
     path("api/reportes/",  include("apps.reportes.urls")),
 
     # Consulta pública — sin token
-    path("/api/pedido/<str:codigo>/", ConsultaPedidoPublicaView.as_view(), name="consulta-publica"),
+    path("api/pedido/<str:codigo>/", ConsultaPedidoPublicaView.as_view(), name="consulta-publica"),
 ]
