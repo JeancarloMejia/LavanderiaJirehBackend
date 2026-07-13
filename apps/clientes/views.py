@@ -43,6 +43,10 @@ class ClienteViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         persona = ClienteService.agregar_persona_autorizada(pk, serializer.validated_data)
         return Response(PersonaAutorizadaSerializer(persona).data, status=201)
+    
+    def destroy(self, request, *args, **kwargs):
+     ClienteService.eliminar_cliente(kwargs["pk"])
+     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PersonaAutorizadaViewSet(viewsets.ModelViewSet):

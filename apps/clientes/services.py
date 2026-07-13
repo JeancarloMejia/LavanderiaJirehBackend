@@ -1,6 +1,8 @@
 from django.db import transaction
+from django.db.models.deletion import RestrictedError
 from core.exceptions import RecursoNoEncontradoError, ReglaDeNegocioError
 from .models import Cliente, PersonaAutorizada
+from apps.pedidos.models import Pedido
 
 
 class ClienteService:
@@ -42,3 +44,16 @@ class ClienteService:
         except PersonaAutorizada.DoesNotExist:
             raise RecursoNoEncontradoError(f"Persona autorizada {id_persona} no encontrada.")
         persona.delete()
+
+    @staticmethod
+    def eliminar_cliente(id_cliente: int) -> None:
+     cliente = ClienteService.obtener_o_error(id_cliente)
+
+     try:
+        cliente.delete()
+     except RestrictedError:
+        total = Pedido.objects.filter(id_cliente=cliente).count()
+
+        raise ReglaDeNegocioError(
+            f"No se puede eliminar el cliente porque tiene {total} pedido(s) registrado(s)."
+        )    
