@@ -125,7 +125,7 @@ class PedidoService:
             return
 
         asunto, cuerpo = MENSAJES_ESTADO[nuevo_estado]
-        url_consulta   = f"{settings.FRONTEND_URL}/pedido/{pedido.codigo}/"
+        url_consulta   = f"{settings.FRONTEND_URL}/seguimiento/{pedido.codigo}/"
 
         mensaje = (
             f"Hola {cliente.nombres},\n\n"
