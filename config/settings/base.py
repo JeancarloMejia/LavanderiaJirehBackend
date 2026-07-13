@@ -11,7 +11,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# Clave de firma JWT con mínimo 32 bytes garantizado (SHA-256 del SECRET_KEY si es corto)
 _raw_key = os.getenv("JWT_SIGNING_KEY") or SECRET_KEY or ""
 _JWT_SIGNING_KEY = (
     _raw_key if len(_raw_key.encode()) >= 32
@@ -23,17 +22,17 @@ _db_url = urlparse(os.getenv("DATABASE_URL", ""))
 
 DATABASES = {
     "default": {
-        "ENGINE":   "django.db.backends.postgresql",
-        "NAME":     _db_url.path.lstrip("/"),
-        "USER":     _db_url.username,
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": _db_url.path.lstrip("/"),
+        "USER": _db_url.username,
         "PASSWORD": _db_url.password,
-        "HOST":     _db_url.hostname,
-        "PORT":     _db_url.port or 5432,
+        "HOST": _db_url.hostname,
+        "PORT": _db_url.port or 5432,
         "OPTIONS": {
             "sslmode": "require",
             "connect_timeout": 10,
         },
-        "CONN_MAX_AGE":       0,
+        "CONN_MAX_AGE": 0,
         "CONN_HEALTH_CHECKS": False,
     }
 }
@@ -52,6 +51,7 @@ THIRD_PARTY_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
+    "anymail",
 ]
 
 LOCAL_APPS = [
@@ -76,8 +76,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF      = "config.urls"
-WSGI_APPLICATION  = "config.wsgi.application"
+ROOT_URLCONF = "config.urls"
+WSGI_APPLICATION = "config.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TEMPLATES = [{
@@ -95,11 +95,11 @@ TEMPLATES = [{
 }]
 
 LANGUAGE_CODE = "es-pe"
-TIME_ZONE     = "America/Lima"
-USE_I18N      = True
-USE_TZ        = True
+TIME_ZONE = "America/Lima"
+USE_I18N = True
+USE_TZ = True
 
-STATIC_URL  = "/static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 PASSWORD_HASHERS = [
@@ -117,34 +117,32 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
     ),
-    "EXCEPTION_HANDLER":        "core.exceptions.custom_exception_handler",
+    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
     "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardPagination",
     "PAGE_SIZE": 20,
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME":    timedelta(minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME_MINUTES", 60))),
-    "REFRESH_TOKEN_LIFETIME":   timedelta(days=int(os.getenv("REFRESH_TOKEN_LIFETIME_DAYS", 7))),
-    "ROTATE_REFRESH_TOKENS":    True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME_MINUTES", 60))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(os.getenv("REFRESH_TOKEN_LIFETIME_DAYS", 7))),
+    "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
-    "AUTH_HEADER_TYPES":        ("Bearer",),
-    "USER_ID_FIELD":            "id",
-    "USER_ID_CLAIM":            "user_id",
-    "SIGNING_KEY":              _JWT_SIGNING_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "SIGNING_KEY": _JWT_SIGNING_KEY,
 }
 
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
-# Email SMTP Gmail 
-EMAIL_BACKEND       = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST          = "smtp.gmail.com"
-EMAIL_PORT          = 587
-EMAIL_USE_TLS       = True
-EMAIL_HOST_USER     = os.getenv("EMAIL_HOST_USER")    
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") 
-DEFAULT_FROM_EMAIL  = f"Lavanderia Jireh <{os.getenv('EMAIL_HOST_USER')}>"
+EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
 
-# URL base para links en correos
+ANYMAIL = {
+    "RESEND_API_KEY": os.getenv("RESEND_API_KEY"),
+}
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Lavanderia Jireh <onboarding@resend.dev>")
+
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:8001")
 
 LOGGING = {
